@@ -56,6 +56,10 @@ Run `clipman store` with the `--no-persist` option if you are affected. Unfortun
 Supporting images or fixing the known issues would require a complete rewrite using wlroots directly.
 Clipman is considered feature complete and is now in maintanance mode.
 
+## Related software
+
+- [Clipmon](https://git.sr.ht/~whynothugo/clipmon): a demon specialized in keeping the clipboard alive after an application quits; if that's your only reason for using a clipboard manager, it might be a better fit as it supports any filetype (not just text).
+
 ## License
 
 GPL v3.0
