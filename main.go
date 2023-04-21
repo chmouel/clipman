@@ -16,7 +16,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-const version = "1.6.1"
+const version = "1.6.2"
 
 var (
 	app      = kingpin.New("clipman", "A clipboard manager for Wayland")
