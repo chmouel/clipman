@@ -14,7 +14,7 @@ Requirements:
 
 - a windows manager that uses `wlr-data-control`, like Sway and other wlroots-based WMs.
 - wl-clipboard >= 2.0
-- a selector: wofi, bemenu, dmenu or rofi are specially supported, but you can use what you want
+- a selector: wofi and bemenu are specially supported, but you can use what you want
 - notify-send (optional, for desktop notifications)
 
 [Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go get github.com/yory8/clipman` OR run `go install` inside this folder.
