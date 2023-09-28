@@ -5,7 +5,14 @@ This is a fork of the archived clipman project.
 I simply added those features:
 
 - `--err-on-no-selection` exit with an exit 1 when no selection is
-  made in the picker
+  made in the picker. This allows me to do something like this with sway:
+
+  ```generic
+  bindsym $super+v exec "clipman pick -t wofi --err-on-no-selection && wtype -M ctrl -M shift v"
+  ```
+
+  This will choose a text from clipman and paste it (with the help of wtype) in the current window
+  unless I press escape in the picker.
 
 - `--min-char` minimum number of characters before storing
 
