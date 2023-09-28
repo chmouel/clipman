@@ -34,7 +34,7 @@ var (
 	pickTool           = picker.Flag("tool", "Which selector to use: wofi/bemenu/CUSTOM/dmenu/rofi/STDOUT").Short('t').Required().String()
 	pickToolArgs       = picker.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 	pickEsc            = picker.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
-	errorOnNoSelection = picker.Flag("errorOnNoSelection", "exit 1 when there is no selection").Default("false").Bool()
+	errorOnNoSelection = picker.Flag("err-on-no-selection", "exit 1 when there is no selection").Default("false").Bool()
 
 	clearer       = app.Command("clear", "Remove item/s from history")
 	maxClearer    = clearer.Flag("max-items", "scrollview length").Default("15").Int()

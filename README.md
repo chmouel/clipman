@@ -1,8 +1,13 @@
-### Fork of [clipman](https://github.com/yory8/clipman)
+# Fork of [clipman](https://github.com/yory8/clipman)
 
-This is a fork of the archived clipman project. I simply added the flag i
-needed `--errorOnNoSelection` to exit with an error code when no selection is
-made will be happy to add more features if needed.
+This is a fork of the archived clipman project.
+
+I simply added those features:
+
+- `--err-on-no-selection` exit with an exit 1 when no selection is
+  made in the picker
+
+Will be happy to add more or accept contributions.
 
 # Clipman
 
