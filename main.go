@@ -27,6 +27,7 @@ var (
 	storer    = app.Command("store", "Record clipboard events (run as argument to `wl-paste --watch`)")
 	maxDemon  = storer.Flag("max-items", "history size").Default("15").Int()
 	noPersist = storer.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
+	minChar   = storer.Flag("min-char", "Minimum number of characters before storing").Default("-1").Int()
 	unix      = storer.Flag("unix", "Normalize line endings to LF").Bool()
 
 	picker             = app.Command("pick", "Pick an item from clipboard history")
@@ -69,6 +70,10 @@ func main() {
 			smartLog("Couldn't get input from stdin.", "critical", *alert)
 		}
 		text := strings.Join(stdin, "")
+
+		if *minChar > 0 && len(text) < *minChar {
+			return
+		}
 
 		persist := !*noPersist
 		if err := store(text, history, histfile, *maxDemon, persist); err != nil {

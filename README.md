@@ -7,6 +7,8 @@ I simply added those features:
 - `--err-on-no-selection` exit with an exit 1 when no selection is
   made in the picker
 
+- `--min-char` minimum number of characters before storing
+
 Will be happy to add more or accept contributions.
 
 # Clipman
