@@ -1,8 +1,8 @@
-### ARCHIVED ###
+### Fork of [clipman](https://github.com/yory8/clipman)
 
-Github is forcing me to move to 2FA, and I can't be bothered to find out how it's done, nor do I wish to. As I've stopped using a clipboard manager for a while, I have decided to archive this repository rather than move to a decent host. I recommend making your own clone because I'll fully delete my account in the near future.
-
-Clipman is a finished program: it works, and doesn't need maintenance. It is also very simple and tiny, in fact I should have used python or even just bash. It has some fundamental design flaws that might warrant exploring a redo from scratch, though the big issues still lack a satisfying solution at the wayland protocol level. Any interested party will find abundant documentation about it scattered throughout the issue tracker.
+This is a fork of the archived clipman project. I simply added the flag i
+needed `--errorOnNoSelection` to exit with an error code when no selection is
+made will be happy to add more features if needed.
 
 # Clipman
 
