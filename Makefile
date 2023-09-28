@@ -1,10 +1,16 @@
 OUTPUT_DIR = bin
 NAME  := clipman
+GOLANGCI_LINT := $(shell command -v golangci-lint 2> /dev/null)
 
-all: $(OUTPUT_DIR)/$(NAME)
+all: lint $(OUTPUT_DIR)/$(NAME)
 
 mkdir: $(OUTPUT_DIR)
-	mkdir -p $(OUTPUT_DIR)
+	@mkdir -p $(OUTPUT_DIR)
 
 $(OUTPUT_DIR)/$(NAME): *.go mkdir
-	go build $(FLAGS)  -v -o $@ ./
+	@echo "building..."
+	@go build $(FLAGS)  -v -o $@ ./
+
+lint: $(GOLANGCI_LINT)
+	@echo "linting..."
+	@$(GOLANGCI_LINT) run
