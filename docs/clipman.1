@@ -4,7 +4,6 @@ clipman
 .SH "SYNOPSIS"
 .TP
 \fBclipman [<flags>] <command> [<args> ...]\fR
-
 .SH "DESCRIPTION"
 A clipboard manager for Wayland
 .SH "OPTIONS"
@@ -20,6 +19,12 @@ Serve item to the primary clipboard. Default: --no-primary
 .TP
 \fB--notify\fR
 Send desktop notifications on errors
+.TP
+\fB--err-on-no-selection\fR
+exit with an exit 1 when no selection is made in the picker.
+.TP
+\fB--min-char\fR
+minimum number of characters before storing
 .TP
 \fB-v, --version\fR
 Show application version.
@@ -84,14 +89,30 @@ Serve the last recorded item from history
 .PP
 Show all items from history
 .SH "USAGE"
-Run the binary in your Sway session by adding `exec wl-paste -t text --watch clipman store` (or `exec wl-paste -t text --watch clipman store 1>> PATH/TO/LOGFILE 2>&1 &` to log errors) at the beginning of your config. It is highly recommended that you run clipman with the `--no-persist` option, see Known Issues.
+Run the binary in your Sway session by adding:
+.nf
+\&
+.in +4m
+.B exec wl-paste -t text --watch clipman store 
+.in
+\&
+.fi
+or to log errors at the beginning of your config:
+.nf
+\&
+.in +4m
+exec wl-paste -t text --watch clipman store 1>> PATH/TO/LOGFILE 2>&1 &
+.in
+\&
+.fi
+It is highly recommended that you run clipman with the `--no-persist` option, see Known Issues.
 .PP
 For primary clipboard support, also add `exec wl-paste -p -t text --watch clipman store -P --histpath="~/.local/share/clipman-primary.json` (note that both the `-p` in wl-paste and the `-P` in clipman are mandatory in this case).
 .PP
 To query the history and select items, run the binary as `clipman pick -t wofi`. You can assign it to a keybinding: `bindsym $mod+h exec clipman pick -t wofi`.
 You can pass additional arguments to the selector like this: `clipman pick --tool wofi -T'--prompt=my-prompt -i'` (both `--prompt` and `-i` are flags of wofi).
 You can use a custom selector like this: `clipman pick --print0 --tool=CUSTOM --tool-args="fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0"`.
-.PP
+To only paste if there's something selected: `bindsym $mod+v exec "clipman pick -t wofi --err-on-no-selection && wtype -M ctrl -M shift v"`.
 To remove items from history, `clipman clear -t wofi` and `clipman clear --all`.
 .PP
 To serve the last history item at startup, add `exec clipman restore` to your Sway config.
