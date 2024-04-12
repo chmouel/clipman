@@ -1,27 +1,36 @@
-.TH clipman 1 1.6.2 ""
+'\" t
+.TH clipman 1
 .SH "NAME"
-clipman
+clipman \- a clipboard manager for Wayland
 .SH "SYNOPSIS"
-.TP
-\fBclipman [<flags>] <command> [<args> ...]\fR
-
+.B clipman
+[<options>] <command> [<args> ...]
 .SH "DESCRIPTION"
-A clipboard manager for Wayland
+A basic clipboard manager for Wayland, with support for persisting copy buffers after an application exits.
 .SH "OPTIONS"
 .TP
-\fB-h, --help\fR
-Show context-sensitive help (also try --help-long and --help-man).
+\fB\-h\fR, \fB\-\-help\fR
+Show context\-sensitive help (also try
+.B \-\-help\-long
+and
+.BR \-\-help\-man ).
 .TP
-\fB--histpath="~/.local/share/clipman.json"\fR
+\fB\-\-histpath="~/.local/share/clipman.json"\fR
 Path of history file
 .TP
-\fB--primary\fR
-Serve item to the primary clipboard. Default: --no-primary
+\fB\-\-primary\fR
+Serve item to the primary clipboard. Default: \-\-no\-primary
 .TP
-\fB--notify\fR
+\fB\-\-notify\fR
 Send desktop notifications on errors
 .TP
-\fB-v, --version\fR
+\fB\-\-err\-on\-no\-selection\fR
+exit with an exit 1 when no selection is made in the picker.
+.TP
+\fB\-\-min\-char\fR
+minimum number of characters before storing
+.TP
+\fB\-v, \-\-version\fR
 Show application version.
 .SH "COMMANDS"
 .SS
@@ -31,79 +40,180 @@ Show help.
 .SS
 \fBstore [<flags>]\fR
 .PP
-Record clipboard events (run as argument to `wl-paste --watch`)
+Record clipboard events (run as argument to `wl\-paste \-\-watch`)
 .TP
-\fB--max-items=15\fR
+\fB\-\-max\-items=15\fR
 history size
 .TP
-\fB-P, --no-persist\fR
+\fB\-P, \-\-no\-persist\fR
 Don't persist a copy buffer after a program exits
 .TP
-\fB--unix\fR
+\fB\-\-unix\fR
 Normalize line endings to LF
 .SS
-\fBpick --tool=TOOL [<flags>]\fR
+\fBpick \-\-tool=TOOL [<flags>]\fR
 .PP
 Pick an item from clipboard history
 .TP
-\fB--max-items=15\fR
+\fB\-\-max\-items=15\fR
 scrollview length
 .TP
-\fB-t, --tool=TOOL\fR
+\fB\-t, \-\-tool=TOOL\fR
 Which selector to use: wofi/bemenu/CUSTOM/STDOUT
 .TP
-\fB-T, --tool-args=""\fR
-Extra arguments to pass to the --tool
+\fB\-T, \-\-tool\-args=""\fR
+Extra arguments to pass to the \-\-tool
 .TP
-\fB--print0\fR
-Separate items using NULL; recommended if your tool supports --read0 or similar
+\fB\-\-print0\fR
+Separate items using NULL; recommended if your tool supports \-\-read0 or similar
 .SS
 \fBclear [<flags>]\fR
 .PP
 Remove item/s from history
 .TP
-\fB--max-items=15\fR
+\fB\-\-max\-items=15\fR
 scrollview length
 .TP
-\fB-t, --tool=TOOL\fR
+\fB\-t, \-\-tool=TOOL\fR
 Which selector to use: wofi/bemenu/CUSTOM/STDOUT
 .TP
-\fB-T, --tool-args=""\fR
-Extra arguments to pass to the --tool
+\fB\-T, \-\-tool\-args=""\fR
+Extra arguments to pass to the
+.B \-\-tool
 .TP
-\fB-a, --all\fR
+\fB\-a, \-\-all\fR
 Remove all items
 .TP
-\fB--print0\fR
-Separate items using NULL; recommended if your tool supports --read0 or similar
+\fB\-\-print0\fR
+Separate items using NULL; recommended if your tool supports
+.B \-\-read0
+or similar
 .SS
 \fBrestore\fR
 .PP
 Serve the last recorded item from history
-\fBshow-history\fR
-.PP
+.SS
+\fBshow\-history\fR
 Show all items from history
 .SH "USAGE"
-Run the binary in your Sway session by adding `exec wl-paste -t text --watch clipman store` (or `exec wl-paste -t text --watch clipman store 1>> PATH/TO/LOGFILE 2>&1 &` to log errors) at the beginning of your config. It is highly recommended that you run clipman with the `--no-persist` option, see Known Issues.
+Run the binary in your Sway session by adding to your config:
+.nf
+\&
+.in +4m
+.B exec wl\-paste \-t text \-\-watch clipman store 
+.in
+\&
+.fi
+or to log errors:
+.nf
+\&
+.in +4m
+.B exec wl\-paste \-t text \-\-watch clipman store \e
+.in +4m
+.B 1>> PATH/TO/LOGFILE 2>&1
+.in -4m
+.in -4m
+\&
+.fi
+It is highly recommended that you run clipman with the
+.B \-\-no\-persist
+option, see
+.BR "KNOWN ISSUES" .
 .PP
-For primary clipboard support, also add `exec wl-paste -p -t text --watch clipman store -P --histpath="~/.local/share/clipman-primary.json` (note that both the `-p` in wl-paste and the `-P` in clipman are mandatory in this case).
+For primary clipboard support, also add:
+.nf
+\&
+.in +4m
+.B exec wl\-paste \-p \-t text \-\-watch clipman store \-P \e
+.in +4m
+.B \-\-histpath="~/.local/share/clipman\-primary.json"
+.in -4m
+.in -4m
+\&
+.fi
+note that both the `\-p` in wl\-paste and the `\-P` in clipman are mandatory in this case.
 .PP
-To query the history and select items, run the binary as `clipman pick -t wofi`. You can assign it to a keybinding: `bindsym $mod+h exec clipman pick -t wofi`.
-You can pass additional arguments to the selector like this: `clipman pick --tool wofi -T'--prompt=my-prompt -i'` (both `--prompt` and `-i` are flags of wofi).
-You can use a custom selector like this: `clipman pick --print0 --tool=CUSTOM --tool-args="fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0"`.
+To query the history and select items, run the binary as
+.nf
+\&
+.in +4m
+.B clipman pick \-t wofi
+.in
+\&
+.fi
+You can assign it to a keybinding:
+.nf
+\&
+.in +4m
+.B bindsym $mod+h exec clipman pick \-t wofi
+.in
+\&
+.fi
+You can pass additional arguments to the selector like this:
+.nf
+\&
+.in +4m
+.B clipman pick \-\-tool wofi \-T'\-\-prompt=my\-prompt \-i'
+.in
+\&
+.fi
+both `\-\-prompt` and `\-i` are flags of wofi.
 .PP
-To remove items from history, `clipman clear -t wofi` and `clipman clear --all`.
-.PP
-To serve the last history item at startup, add `exec clipman restore` to your Sway config.
+You can use a custom selector like this:
+.nf
+\&
+.in +4m
+.B clipman pick \-\-print0 \-\-tool=CUSTOM \-\-tool\-args= \e
+.in +4m
+\fB"fzf \-\-prompt 'pick > ' \-\-bind 'tab:up' \-\-cycle \-\-read0"\fR
+.in -4m
+.in -4m
+\&
+.fi
+To only paste if there's something selected:
+.nf
+\&
+.in +4m
+\fBbindsym $mod+v exec "clipman pick \-t wofi \-\-err\-on\-no\-selection \e
+.in +4m
+&& wtype \-M ctrl \-M shift v"\fR
+.in -4m
+.in -4m
+\&
+.fi
+To remove items from history:
+.nf
+\&
+.in +4m
+.B clipman clear \-t wofi
+.br
+.B clipman clear \-\-all
+.in
+\&
+.fi
+To serve the last history item at startup, add this to your Sway config:
+.nf
+\&
+.in +4m
+.B exec clipman restore
+.in
+\&
+.fi
 .SH "BUGS"
 .PP
-When you experience a clipboard-related bug, try to see if it still happens without clipman running, as it's more likely to be caused by one of our own known issues rather than wl-clipboard.
+When you experience a clipboard\-related bug, try to see if it still happens without clipman running, as it's more likely to be caused by one of our own known issues rather than wl\-clipboard.
 .SH "KNOWN ISSUES"
 .PP
 We only support plain text.
 .PP
 By default, we continue serving the last copied item even after its owner has exited.
-This means that, unless you run with the `--no-persist` option, you'll always immediately lose rich content;
+This means that, unless you run with the
+.B \-\-no\-persist
+option, you'll always immediately lose rich content;
 for example: vim's visual block mode breaks; copying images in Firefox breaks; if you copy a bookmark in Firefox, you won't be able to paste it in another bookmark folder; if you copy formatted text inside Libre Office you'll lose all formatting on paste.
 .PP
-Run `clipman store` with the `--no-persist` option if you are affected. Unfortunately, it seems that there is no way to make them play well together.
+Run
+.B clipman store
+with the
+.B \-\-no\-persist
+option if you are affected. Unfortunately, it seems that there is no way to make them play well together.
