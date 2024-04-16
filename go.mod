@@ -1,4 +1,4 @@
-module github.com/yory8/clipman
+module github.com/chmouel/clipman
 
 go 1.13
 
