@@ -13,7 +13,7 @@ import (
 	"strings"
 	"syscall"
 
-	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/alecthomas/kingpin/v2"
 )
 
 const version = "1.6.2"
