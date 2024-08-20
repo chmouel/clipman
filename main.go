@@ -43,6 +43,9 @@ var (
 	clearToolArgs = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
 	clearEsc      = clearer.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
+
+	showHistory = app.Command("show-history", "Show all items from history")
+	
 	_             = app.Command("restore", "Serve the last recorded item from history")
 )
 
