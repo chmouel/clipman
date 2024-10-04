@@ -37,7 +37,7 @@ Requirements:
 - a selector: wofi and bemenu are specially supported, but you can use what you want
 - notify-send (optional, for desktop notifications)
 
-[Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go get github.com/chmouel/clipman` OR run `go install` inside this folder.
+[Install go](https://golang.org/doc/install), add `$GOPATH/bin` to your path, then run `go install github.com/chmouel/clipman@latest` OR run `go install` inside this folder.
 
 ### Distros
 
