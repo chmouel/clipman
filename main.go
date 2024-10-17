@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -44,9 +43,9 @@ var (
 	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
 	clearEsc      = clearer.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
 
-	_             = app.Command("show-history", "Show all items from history")
-	
-	_             = app.Command("restore", "Serve the last recorded item from history")
+	_ = app.Command("show-history", "Show all items from history")
+
+	_ = app.Command("restore", "Serve the last recorded item from history")
 )
 
 func main() {
@@ -101,8 +100,13 @@ func main() {
 		serveTxt(history[len(history)-1])
 	case "show-history":
 		if len(history) != 0 {
-			urlsJson, _ := json.Marshal(history)
-			fmt.Println(string(urlsJson))
+			urlsJSON, err := json.Marshal(history)
+			if err != nil {
+				fmt.Printf("Error marshalling history: %s\n", err.Error())
+				return
+			}
+
+			fmt.Println(string(urlsJSON))
 			return
 		}
 		fmt.Println("Nothing to show")
@@ -177,14 +181,14 @@ func getHistory(rawPath string) (string, []string, error) {
 
 	// read history if it exists
 	var history []string
-	b, err := ioutil.ReadFile(histfile)
+	b, err := os.ReadFile(histfile)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return "", nil, fmt.Errorf("failure reading history file: %s", err)
+			return "", nil, fmt.Errorf("failure reading history file: %w", err)
 		}
 	} else {
 		if err := json.Unmarshal(b, &history); err != nil {
-			return "", nil, fmt.Errorf("failure parsing history: %s", err)
+			return "", nil, fmt.Errorf("failure parsing history: %w", err)
 		}
 	}
 
@@ -217,7 +221,20 @@ func serveTxt(s string) {
 	}
 }
 
-// modified from standard lib to not drop \r and \n
+// scanLines is a custom implementation of a split function for a bufio.Scanner.
+// It has been modified from the standard library version to ensure that carriage return (\r)
+// and newline (\n) characters are not dropped. This is important for maintaining the integrity
+// of the input data, especially when dealing with text files or streams where these characters
+// are significant.
+//
+// Parameters:
+// - data: The byte slice to be scanned.
+// - atEOF: A boolean indicating if the end of the file has been reached.
+//
+// Returns:
+// - advance: The number of bytes to advance the input.
+// - token: The next token to return to the user.
+// - err: Any error encountered during scanning.
 func scanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
@@ -245,7 +262,17 @@ func scanLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	return 0, nil, nil
 }
 
-// dropCR drops a terminal \r from the data. Modified from Go's Stdlib
+// dropCR drops a terminal \r from the data. This function has been modified from Go's
+// standard library to ensure that carriage return (\r) characters are properly handled.
+// It checks if the data ends with a newline (\n) and removes the preceding carriage return (\r)
+// if present. This is useful for processing text data that may have different line ending
+// conventions (e.g., Windows vs. Unix).
+//
+// Parameters:
+// - data: The byte slice from which the terminal \r should be dropped.
+//
+// Returns:
+// - A new byte slice with the terminal \r removed, if it was present.
 func dropCR(data []byte) []byte {
 	orig := data
 

@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 )
 
-func store(text string, history []string, histfile string, max int, persist bool) error {
+func store(text string, history []string, histfile string, maxChar int, persist bool) error {
 	if text == "" {
 		return nil
 	}
@@ -22,9 +22,9 @@ func store(text string, history []string, histfile string, max int, persist bool
 
 		// drop oldest items that exceed max list size
 		// if max = 0, we allow infinite history; NOTE: users should NOT rely on this behaviour as we might change it without notice
-		if max != 0 && l >= max {
+		if maxChar != 0 && l >= maxChar {
 			// usually just one item, but more if we suddenly reduce our --max-items
-			history = history[l-max+1:]
+			history = history[l-maxChar+1:]
 		}
 
 		// remove duplicates
@@ -35,7 +35,7 @@ func store(text string, history []string, histfile string, max int, persist bool
 
 	// dump history to file so that other apps can query it
 	if err := write(history, histfile); err != nil {
-		return fmt.Errorf("error writing history: %s", err)
+		return fmt.Errorf("error writing history: %w", err)
 	}
 
 	// make the copy buffer available to all applications,
@@ -47,7 +47,7 @@ func store(text string, history []string, histfile string, max int, persist bool
 	return nil
 }
 
-// filter removes all occurrences of text
+// filter removes all occurrences of text.
 func filter(slice []string, text string) []string {
 	var filtered []string
 	for _, s := range slice {
@@ -59,12 +59,12 @@ func filter(slice []string, text string) []string {
 	return filtered
 }
 
-// write dumps history to json file
+// write dumps history to json file.
 func write(history []string, histfile string) error {
 	b, err := json.Marshal(history)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(histfile, b, 0600)
+	return os.WriteFile(histfile, b, 0o600)
 }

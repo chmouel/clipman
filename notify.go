@@ -22,7 +22,7 @@ func smartLog(message, urgency string, alert bool) {
 	}
 }
 
-func notify(message string, urgency string) error {
+func notify(message, urgency string) error {
 	var timeout time.Duration
 	switch urgency {
 	// cases accepted by notify-send: low, normal, critical
@@ -40,5 +40,4 @@ func notify(message string, urgency string) error {
 	args := []string{"-a", "Clipman", "-u", urgency, "-t", millisec, message}
 
 	return exec.Command("notify-send", args...).Run()
-
 }

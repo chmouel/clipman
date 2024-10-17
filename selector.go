@@ -11,7 +11,7 @@ import (
 	"github.com/kballard/go-shellquote"
 )
 
-func selector(data []string, max int, tool, prompt, toolArgs string, null, errorOnNoSelection bool) (string, error) {
+func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, errorOnNoSelection bool) (string, error) {
 	if len(data) == 0 {
 		return "", errors.New("nothing to show: no data available")
 	}
@@ -39,15 +39,15 @@ func selector(data []string, max int, tool, prompt, toolArgs string, null, error
 			"-fn",
 			"-misc-dejavu sans mono-medium-r-normal--17-120-100-100-m-0-iso8859-16",
 			"-l",
-			strconv.Itoa(max),
+			strconv.Itoa(maxChar),
 		}
 	case "bemenu":
-		args = []string{"bemenu", "--prompt", prompt, "--list", strconv.Itoa(max)}
+		args = []string{"bemenu", "--prompt", prompt, "--list", strconv.Itoa(maxChar)}
 	case "rofi":
 		args = []string{
 			"rofi", "-p", prompt, "-dmenu",
 			"-lines",
-			strconv.Itoa(max),
+			strconv.Itoa(maxChar),
 		}
 	case "wofi":
 		args = []string{"wofi", "-p", prompt, "--cache-file", "/dev/null", "--dmenu"}
