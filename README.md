@@ -1,4 +1,4 @@
-# Fork of [clipman](https://github.com/yory8/clipman)
+# Active Fork of [clipman](https://github.com/yory8/clipman)
 
 This is a fork of the archived clipman project.
 
@@ -16,7 +16,7 @@ I simply added those features:
 
 - `--min-char` minimum number of characters before storing
 
-Will be happy to add more or accept contributions.
+Will be happy to add more features and accept contributions.
 
 # Clipman
 
