@@ -9,16 +9,17 @@ import (
 	"strings"
 
 	"github.com/kballard/go-shellquote"
+	"golang.org/x/text/unicode/norm"
 )
 
-func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, errorOnNoSelection bool) (string, error) {
+func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, errorOnNoSelection, normalize bool) (string, error) {
 	if len(data) == 0 {
 		return "", errors.New("nothing to show: no data available")
 	}
 
 	// output to stdout and return
 	if tool == "STDOUT" {
-		escaped, _ := preprocessData(data, 0, !null)
+		escaped, _ := preprocessData(data, 0, !null, normalize)
 		sep := "\n"
 		if null {
 			sep = "\000"
@@ -78,7 +79,7 @@ func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, e
 		return "", fmt.Errorf("%s is not installed", tool)
 	}
 
-	processed, guide := preprocessData(data, 1000, !null)
+	processed, guide := preprocessData(data, 1000, !null, normalize)
 	sep := "\n"
 	if null {
 		sep = "\000"
@@ -111,6 +112,10 @@ func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, e
 	if b[len(b)-1] == '\n' {
 		b = b[:len(b)-1]
 	}
+	// normalize Unicode to NFC
+	if normalize {
+		b = norm.NFC.Bytes(b)
+	}
 	sel, ok := guide[string(b)]
 	if !ok {
 		return "", errors.New("couldn't recover original string")
@@ -123,13 +128,15 @@ func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, e
 // - reverses the data
 // - optionally escapes \n, \r and \t (it would break some external selectors)
 // - optionally it cuts items longer than maxChars bytes (dmenu doesn't allow more than ~1200)
+// - optionally normalizes Unicode to NFC : https://unicode.org/reports/tr15/#Norm_Forms
 // A guide is created to allow restoring the selected item.
-func preprocessData(data []string, maxChars int, escape bool) ([]string, map[string]string) {
+func preprocessData(data []string, maxChars int, escape, normalize bool) ([]string, map[string]string) {
 	var escaped []string
 	guide := make(map[string]string)
 
 	for i := len(data) - 1; i >= 0; i-- { // reverse slice
 		original := data[i]
+
 		repr := original
 
 		// escape newlines
@@ -144,6 +151,10 @@ func preprocessData(data []string, maxChars int, escape bool) ([]string, map[str
 		// optionally cut to maxChars
 		if maxChars > 0 && len(repr) > maxChars {
 			repr = repr[:maxChars]
+		}
+		// optionally normalize to Unicode NFC
+		if normalize {
+			repr = norm.NFC.String(repr)
 		}
 
 		guide[repr] = original
