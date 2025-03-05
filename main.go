@@ -35,13 +35,15 @@ var (
 	pickToolArgs       = picker.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
 	pickEsc            = picker.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
 	errorOnNoSelection = picker.Flag("err-on-no-selection", "exit 1 when there is no selection").Default("false").Bool()
+	pickNormalize      = picker.Flag("normalize-unicode", "normalize to NFC per https://unicode.org/reports/tr15").Default("false").Bool()
 
-	clearer       = app.Command("clear", "Remove item/s from history")
-	maxClearer    = clearer.Flag("max-items", "scrollview length").Default("15").Int()
-	clearTool     = clearer.Flag("tool", "Which selector to use: wofi/bemenu/CUSTOM/dmenu/rofi/STDOUT").Short('t').String()
-	clearToolArgs = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
-	clearAll      = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
-	clearEsc      = clearer.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
+	clearer        = app.Command("clear", "Remove item/s from history")
+	maxClearer     = clearer.Flag("max-items", "scrollview length").Default("15").Int()
+	clearTool      = clearer.Flag("tool", "Which selector to use: wofi/bemenu/CUSTOM/dmenu/rofi/STDOUT").Short('t').String()
+	clearToolArgs  = clearer.Flag("tool-args", "Extra arguments to pass to the --tool").Short('T').Default("").String()
+	clearAll       = clearer.Flag("all", "Remove all items").Short('a').Default("false").Bool()
+	clearEsc       = clearer.Flag("print0", "Separate items using NULL; recommended if your tool supports --read0 or similar").Default("false").Bool()
+	clearNormalize = clearer.Flag("normalize-unicode", "normalize to NFC per https://unicode.org/reports/tr15").Default("false").Bool()
 
 	_ = app.Command("show-history", "Show all items from history")
 
@@ -82,7 +84,8 @@ func main() {
 			smartLog(err.Error(), "critical", *alert)
 		}
 	case "pick":
-		selection, err := selector(history, *maxPicker, *pickTool, "pick", *pickToolArgs, *pickEsc, *errorOnNoSelection)
+		selection, err := selector(
+			history, *maxPicker, *pickTool, "pick", *pickToolArgs, *pickEsc, *errorOnNoSelection, *pickNormalize)
 		if err != nil {
 			smartLog(err.Error(), "normal", *alert)
 		}
@@ -125,7 +128,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		selection, err := selector(history, *maxClearer, *clearTool, "clear", *clearToolArgs, *clearEsc, *errorOnNoSelection)
+		selection, err := selector(
+			history, *maxClearer, *clearTool, "clear", *clearToolArgs, *clearEsc, *errorOnNoSelection, *clearNormalize)
 		if err != nil {
 			smartLog(err.Error(), "normal", *alert)
 		}

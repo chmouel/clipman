@@ -51,7 +51,8 @@ For primary clipboard support, also add `exec wl-paste -p -t text --watch clipma
 
 To query the history and select items, run the binary as `clipman pick -t wofi`. You can assign it to a keybinding: `bindsym $mod+h exec clipman pick -t wofi`.
 You can pass additional arguments to the selector like this: `clipman pick --tool wofi -T'--prompt=my-prompt -i'` (both `--prompt` and `-i` are flags of wofi).
-You can use a custom selector like this: `clipman pick --print0 --tool=CUSTOM --tool-args="fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0"`.
+
+You can use a custom selector like this: `clipman pick --print0 --tool=CUSTOM --tool-args="fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0"`. Or: `clipman pick --normalize-unicode --tool=CUSTOM --tool-args="tofi"` to make clipman play nice with tools that produce NFC normalized Unicode.
 
 To remove items from history, `clipman clear -t wofi` and `clipman clear --all`.
 

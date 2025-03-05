@@ -66,6 +66,9 @@ Extra arguments to pass to the \-\-tool
 .TP
 \fB\-\-print0\fR
 Separate items using NULL; recommended if your tool supports \-\-read0 or similar
+.TP
+\fB\-\-normalize-unicode\fR
+Normalize to NFC per https://unicode.org/reports/tr15
 .SS
 \fBclear [<flags>]\fR
 .PP
@@ -88,6 +91,9 @@ Remove all items
 Separate items using NULL; recommended if your tool supports
 .B \-\-read0
 or similar
+.TP
+\fB\-\-normalize-unicode\fR
+Normalize to NFC per https://unicode.org/reports/tr15
 .SS
 \fBrestore\fR
 .PP
@@ -100,7 +106,7 @@ Run the binary in your Sway session by adding to your config:
 .nf
 \&
 .in +4m
-.B exec wl\-paste \-t text \-\-watch clipman store 
+.B exec wl\-paste \-t text \-\-watch clipman store
 .in
 \&
 .fi
