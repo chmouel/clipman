@@ -1,10 +1,16 @@
-linters-settings:
-  gocritic:
-    disabled-checks:
-      - unlambda
-  gofumpt:
-    extra-rules: true
+version: "2"
+formatters:
+  settings:
+    gofumpt:
+      extra-rules: true
+  enable:
+    - gofumpt
+    - goimports
 linters:
+  settings:
+    gocritic:
+      disabled-checks:
+        - unlambda
   enable:
     - asasalint
     - asciicheck
@@ -43,15 +49,13 @@ linters:
     #- godox
     #- goerr113
     #- gofmt
-    - gofumpt
     - goheader
-    - goimports
     #- gomnd
     #- gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
-    - gosimple
+    #- gosimple  # merged into staticcheck in v2
     - gosmopolitan
     - govet
     - grouper
@@ -87,10 +91,10 @@ linters:
     - sloglint
     #- sqlclosecheck
     - staticcheck
-    - stylecheck
+    #- stylecheck  # merged into staticcheck in v2
     - tagalign
     #- tagliatelle
-    - tenv
+    #- tenv  # removed in v2
     - testableexamples
     # - testifylint
     #- testpackage

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os/exec"
@@ -39,5 +40,5 @@ func notify(message, urgency string) error {
 
 	args := []string{"-a", "Clipman", "-u", urgency, "-t", millisec, message}
 
-	return exec.Command("notify-send", args...).Run()
+	return exec.CommandContext(context.Background(), "notify-send", args...).Run() //nolint:gosec
 }

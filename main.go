@@ -5,10 +5,12 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -161,7 +163,7 @@ func main() {
 
 func wipeAll(histfile string) error {
 	// clear WM's clipboard
-	if err := exec.Command("wl-copy", "-c").Run(); err != nil {
+	if err := exec.CommandContext(context.Background(), "wl-copy", "-c").Run(); err != nil { //nolint:gosec
 		return err
 	}
 
@@ -185,7 +187,7 @@ func getHistory(rawPath string) (string, []string, error) {
 
 	// read history if it exists
 	var history []string
-	b, err := os.ReadFile(histfile)
+	b, err := os.ReadFile(filepath.Clean(histfile)) //nolint:gosec
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return "", nil, fmt.Errorf("failure reading history file: %w", err)

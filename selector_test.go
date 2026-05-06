@@ -32,7 +32,7 @@ func TestPreprocessDataNormalization(t *testing.T) {
 		{
 			name: "Special Characters",
 			input: []string{
-				"北京",                                   // Chinese
+				"北京",                                   //nolint:gosmopolitan // Chinese
 				"こんにちは",                                // Japanese
 				"안녕하세요",                                // Korean
 				"Москва",                               // Cyrillic
@@ -42,7 +42,7 @@ func TestPreprocessDataNormalization(t *testing.T) {
 			},
 			// These should remain identical after NFC normalization
 			expected: []string{
-				"北京",
+				"北京", //nolint:gosmopolitan
 				"こんにちは",
 				"안녕하세요",
 				"Москва",

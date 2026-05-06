@@ -24,7 +24,9 @@ func selector(data []string, maxChar int, tool, prompt, toolArgs string, null, e
 		if null {
 			sep = "\000"
 		}
-		os.Stdout.WriteString(strings.Join(escaped, sep))
+		if _, err := fmt.Fprint(os.Stdout, strings.Join(escaped, sep)); err != nil {
+			return "", fmt.Errorf("writing to stdout: %w", err)
+		}
 		return "", nil
 	}
 
