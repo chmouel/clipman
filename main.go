@@ -19,17 +19,32 @@ import (
 
 const version = "1.6.2"
 
+// CLIPBOARD_STATE values defined by the wl-clipboard protocol.
+const (
+	// clipboardStateData indicates the clipboard holds readable data.
+	clipboardStateData = "data"
+	// clipboardStateNil indicates the clipboard is empty.
+	clipboardStateNil = "nil"
+	// clipboardStateClear indicates the clipboard was explicitly cleared.
+	clipboardStateClear = "clear"
+	// clipboardStateSensitive indicates the clipboard holds sensitive
+	// data such as a password, which must not be persisted.
+	clipboardStateSensitive = "sensitive"
+)
+
 var (
 	app      = kingpin.New("clipman", "A clipboard manager for Wayland")
 	histpath = app.Flag("histpath", "Path of history file").Default("~/.local/share/clipman.json").String()
 	alert    = app.Flag("notify", "Send desktop notifications on errors").Bool()
 	primary  = app.Flag("primary", "Serve item to the primary clipboard").Default("false").Bool()
 
-	storer    = app.Command("store", "Record clipboard events (run as argument to `wl-paste --watch`)")
-	maxDemon  = storer.Flag("max-items", "history size").Default("15").Int()
-	noPersist = storer.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
-	minChar   = storer.Flag("min-char", "Minimum number of characters before storing").Default("-1").Int()
-	unix      = storer.Flag("unix", "Normalize line endings to LF").Bool()
+	storer     = app.Command("store", "Record clipboard events (run as argument to `wl-paste --watch`)")
+	maxDemon   = storer.Flag("max-items", "history size").Default("15").Int()
+	noPersist  = storer.Flag("no-persist", "Don't persist a copy buffer after a program exits").Short('P').Default("false").Bool()
+	minChar    = storer.Flag("min-char", "Minimum number of characters before storing").Default("-1").Int()
+	unix       = storer.Flag("unix", "Normalize line endings to LF").Bool()
+	storeState = storer.Flag("clipboard-state", "Clipboard state as set by wl-paste").
+			Envar("CLIPBOARD_STATE").Hidden().Default(clipboardStateData).String()
 
 	picker             = app.Command("pick", "Pick an item from clipboard history")
 	maxPicker          = picker.Flag("max-items", "scrollview length").Default("15").Int()
@@ -65,6 +80,16 @@ func main() {
 
 	switch action {
 	case "store":
+		switch *storeState {
+		case clipboardStateSensitive:
+			// sensitive data is not persisted
+			return
+		case clipboardStateNil, clipboardStateClear:
+			// clipboard is empty (nil) or explicitly cleared: wl-paste attaches
+			// /dev/null to stdin and there is nothing to store
+			return
+		}
+
 		// read copy from stdin
 		var stdin []string
 		scanner := bufio.NewScanner(os.Stdin)
