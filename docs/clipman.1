@@ -41,6 +41,12 @@ Show help.
 \fBstore [<flags>]\fR
 .PP
 Record clipboard events (run as argument to `wl\-paste \-\-watch`)
+.PP
+When invoked by wl\-paste, the CLIPBOARD_STATE environment variable is
+honored per the wl\-clipboard protocol: a value of \fBsensitive\fR skips
+storing the item, while \fBnil\fR (empty) and \fBclear\fR (explicitly
+cleared) clipboards are ignored. Any other value, including unset, is
+treated as \fBdata\fR and stored normally.
 .TP
 \fB\-\-max\-items=15\fR
 history size
