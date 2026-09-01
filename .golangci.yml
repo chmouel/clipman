@@ -2,7 +2,8 @@ version: "2"
 formatters:
   settings:
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
   enable:
     - gofumpt
     - goimports
