@@ -112,7 +112,8 @@ func main() {
 		}
 	case "pick":
 		selection, err := selector(
-			history, *maxPicker, *pickTool, "pick", *pickToolArgs, *pickEsc, *errorOnNoSelection, *pickNormalize)
+			history, *maxPicker, *pickTool, "pick", *pickToolArgs, *pickEsc, *errorOnNoSelection, *pickNormalize,
+		)
 		if err != nil {
 			smartLog(err.Error(), "normal", *alert)
 		}
@@ -156,7 +157,8 @@ func main() {
 		}
 
 		selection, err := selector(
-			history, *maxClearer, *clearTool, "clear", *clearToolArgs, *clearEsc, *errorOnNoSelection, *clearNormalize)
+			history, *maxClearer, *clearTool, "clear", *clearToolArgs, *clearEsc, *errorOnNoSelection, *clearNormalize,
+		)
 		if err != nil {
 			smartLog(err.Error(), "normal", *alert)
 		}
