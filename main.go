@@ -17,7 +17,7 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 )
 
-const version = "1.6.2"
+var version = "ver"
 
 // CLIPBOARD_STATE values defined by the wl-clipboard protocol.
 const (
