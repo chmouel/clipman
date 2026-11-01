@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"unicode/utf8"
 
 	"github.com/alecthomas/kingpin/v2"
 )
@@ -102,7 +103,7 @@ func main() {
 		}
 		text := strings.Join(stdin, "")
 
-		if *minChar > 0 && len(text) < *minChar {
+		if *minChar > 0 && utf8.RuneCountInString(text) < *minChar {
 			return
 		}
 
