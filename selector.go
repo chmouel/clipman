@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/kballard/go-shellquote"
 	"golang.org/x/text/unicode/norm"
@@ -150,10 +151,18 @@ func preprocessData(data []string, maxChars int, escape, normalize bool) ([]stri
 			repr = strings.ReplaceAll(repr, "\\r", "\\\\r")
 			repr = strings.ReplaceAll(repr, "\r", "\\r")
 		}
+
 		// optionally cut to maxChars
 		if maxChars > 0 && len(repr) > maxChars {
-			repr = repr[:maxChars]
+			// Back off to the last valid UTF-8 boundary at or before maxChars.
+			// maxChars keeps its byte semantics.
+			end := maxChars
+			for end > 0 && !utf8.RuneStart(repr[end]) {
+				end--
+			}
+			repr = repr[:end]
 		}
+
 		// optionally normalize to Unicode NFC
 		if normalize {
 			repr = norm.NFC.String(repr)

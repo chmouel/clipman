@@ -1,7 +1,9 @@
 package main
 
 import (
+	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"golang.org/x/text/unicode/norm"
 )
@@ -88,5 +90,127 @@ func TestPreprocessDataNormalization(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestPreprocessDataTruncationUTF8(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		maxChars int
+		want     string
+	}{
+		{
+			name:     "ASCII fits exactly",
+			input:    "abc",
+			maxChars: 3,
+			want:     "abc",
+		},
+		{
+			name:     "ASCII truncated at boundary",
+			input:    "abcdef",
+			maxChars: 3,
+			want:     "abc",
+		},
+		{
+			name:     "2-byte rune fits exactly",
+			input:    "aébc", // 61 C3 A9 62 63
+			maxChars: 3,
+			want:     "aé",
+		},
+		{
+			name:     "2-byte rune straddles limit",
+			input:    "aébc",
+			maxChars: 2,
+			want:     "a", // must back off from the split é
+		},
+		{
+			name:     "4-byte rune straddles limit",
+			input:    "a😀b", // 61 F0 9F 98 80 62
+			maxChars: 2,
+			want:     "a",
+		},
+		{
+			name:     "4-byte rune fits exactly",
+			input:    "a😀b",
+			maxChars: 5,
+			want:     "a😀",
+		},
+		{
+			name:     "3-byte runes truncated at boundary",
+			input:    "\u65e5\u672c\u8a9e",
+			maxChars: 3,
+			want:     "\u65e5",
+		},
+		{
+			name:     "3-byte runes cut mid-rune",
+			input:    "\u65e5\u672c\u8a9e",
+			maxChars: 5,
+			want:     "\u65e5", // 5 bytes would split the second rune
+		},
+		{
+			name:     "first rune larger than limit",
+			input:    "é",
+			maxChars: 1,
+			want:     "", // cannot include any complete rune
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, guide := preprocessData([]string{tt.input}, tt.maxChars, false, false)
+			if len(got) != 1 {
+				t.Fatalf("preprocessData returned %d results, want 1", len(got))
+			}
+			if got[0] != tt.want {
+				t.Errorf("truncated = %q, want %q", got[0], tt.want)
+			}
+			if !utf8.ValidString(got[0]) {
+				t.Errorf("truncated result is not valid UTF-8: %q", got[0])
+			}
+			if len(got[0]) > tt.maxChars {
+				t.Errorf("truncated result exceeds maxChars=%d: %q (len %d)",
+					tt.maxChars, got[0], len(got[0]))
+			}
+			if !strings.HasPrefix(tt.input, got[0]) {
+				t.Errorf("truncated result %q is not a prefix of input %q", got[0], tt.input)
+			}
+			if orig, ok := guide[got[0]]; !ok || orig != tt.input {
+				t.Errorf("guide[%q] = %q (ok=%v), want %q", got[0], orig, ok, tt.input)
+			}
+		})
+	}
+}
+
+func TestPreprocessDataTruncationAlwaysValidUTF8(t *testing.T) {
+	inputs := []string{
+		"aébc",
+		"a😀b",
+		"\u65e5\u672c\u8a9e\u30c6\u30b9\u30c8",
+		"e\u0301", // NFD é (e + combining acute)
+		"𝕳𝖊𝖑𝖑𝖔",   // astral plane math letters
+		"ÄÖÜäöüß", // 2-byte Latin-1 supplement
+		"",        // empty input
+	}
+
+	for _, input := range inputs {
+		for maxChars := 1; maxChars <= len(input)+2; maxChars++ {
+			got, _ := preprocessData([]string{input}, maxChars, false, false)
+			if len(got) != 1 {
+				t.Fatalf("preprocessData(%q, %d) returned %d results", input, maxChars, len(got))
+			}
+			result := got[0]
+
+			if !utf8.ValidString(result) {
+				t.Errorf("invalid UTF-8 for input=%q maxChars=%d: got %q", input, maxChars, result)
+			}
+			if len(result) > maxChars {
+				t.Errorf("exceeds maxChars for input=%q maxChars=%d: got %q (len %d)",
+					input, maxChars, result, len(result))
+			}
+			if !strings.HasPrefix(input, result) {
+				t.Errorf("not a prefix for input=%q maxChars=%d: got %q", input, maxChars, result)
+			}
+		}
 	}
 }
